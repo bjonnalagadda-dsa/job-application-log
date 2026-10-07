@@ -1,0 +1,566 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Application Log</title>
+<meta name="robots" content="noindex, nofollow" />
+<meta name="description" content="Every job application sent: status, résumé version, follow-ups." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" />
+
+<style>
+  :root {
+    --bg: #FBF9F4;
+    --surface: #FFFFFF;
+    --surface-2: #F4F0E7;
+    --ink: #211E1A;
+    --muted: #6E675B;
+    --border: #E4DDCE;
+    --accent: #0F6E63;
+    --accent-ink: #0B534A;
+    --amber: #8A5E10;
+    --go: #1F7A4D;
+    --red: #A23A2E;
+    --shadow: 0 1px 2px rgba(33, 30, 26, 0.06), 0 8px 24px -16px rgba(33, 30, 26, 0.18);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #15130E;
+      --surface: #1E1B15;
+      --surface-2: #262219;
+      --ink: #ECE6DA;
+      --muted: #9C9280;
+      --border: #332E22;
+      --accent: #58C7B7;
+      --accent-ink: #7FD6C8;
+      --amber: #D9A441;
+      --go: #5FBE85;
+      --red: #E08B7D;
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.6);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #15130E;
+    --surface: #1E1B15;
+    --surface-2: #262219;
+    --ink: #ECE6DA;
+    --muted: #9C9280;
+    --border: #332E22;
+    --accent: #58C7B7;
+    --accent-ink: #7FD6C8;
+    --amber: #D9A441;
+    --go: #5FBE85;
+    --red: #E08B7D;
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 10px 30px -18px rgba(0, 0, 0, 0.6);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  main {
+    width: 100%;
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 28px clamp(16px, 4vw, 48px) 64px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  a { color: var(--accent-ink); text-decoration-thickness: 1px; text-underline-offset: 2px; }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--muted); margin: 0 0 6px;
+  }
+
+  /* ---------- header ---------- */
+  .top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; flex-wrap: wrap; }
+  h1 {
+    font-family: "Fraunces", Georgia, serif; font-optical-sizing: auto;
+    font-weight: 600; font-size: clamp(28px, 6vw, 38px); line-height: 1.05;
+    letter-spacing: -0.01em; margin: 0; text-wrap: balance;
+  }
+  .back {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px;
+    letter-spacing: 0.04em; text-decoration: none; color: var(--muted);
+    border: 1px solid var(--border); border-radius: 8px; padding: 7px 12px; background: var(--surface);
+  }
+  .back:hover { color: var(--accent-ink); border-color: var(--accent); }
+
+  .sync {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px;
+    letter-spacing: 0.05em; color: var(--muted); margin: 6px 0 0;
+  }
+  .sync.local { color: var(--amber); }
+
+  /* ---------- tiles ---------- */
+  .tiles { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; }
+  .tile {
+    border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px;
+    background: var(--surface); display: flex; flex-direction: column; gap: 4px;
+  }
+  .tile b {
+    font-family: "Fraunces", Georgia, serif; font-size: 28px; font-weight: 600;
+    line-height: 1; font-variant-numeric: tabular-nums;
+  }
+  .tile span {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px;
+    letter-spacing: 0.09em; text-transform: uppercase; color: var(--muted);
+  }
+  .tile.warn b { color: var(--red); }
+  .tile.good b { color: var(--go); }
+
+  /* ---------- cards / form ---------- */
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; box-shadow: var(--shadow); }
+  .form-card { padding: 16px 18px; }
+  .tracker-form { display: flex; flex-wrap: wrap; gap: 10px; align-items: flex-end; }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10px;
+    letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted);
+  }
+  input[type="text"], input[type="search"], select, textarea {
+    font-family: inherit; font-size: 13px; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--border);
+    border-radius: 7px; padding: 8px 10px; max-width: 100%;
+  }
+  input:focus-visible, select:focus-visible, textarea:focus-visible, button:focus-visible {
+    outline: 2px solid var(--accent); outline-offset: 1px;
+  }
+  #f-company { width: 170px; }
+  #f-role { width: 190px; }
+  #f-url { width: 220px; }
+
+  .btn {
+    font-family: inherit; font-size: 13px; font-weight: 600; color: #fff;
+    background: var(--accent); border: 1px solid var(--accent);
+    border-radius: 7px; padding: 8px 16px; cursor: pointer; transition: filter .12s ease;
+  }
+  .btn:hover { filter: brightness(1.08); }
+  .btn.ghost { background: var(--surface); color: var(--ink); border-color: var(--border); font-weight: 500; }
+  .btn.ghost:hover { border-color: var(--accent); color: var(--accent-ink); filter: none; }
+
+  /* ---------- toolbar ---------- */
+  .toolbar { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: center; justify-content: space-between; }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; }
+  .chip {
+    font-family: inherit; font-size: 12px; font-weight: 500; color: var(--muted);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+    padding: 4px 11px; cursor: pointer; display: inline-flex; gap: 6px; align-items: baseline;
+  }
+  .chip i { font-style: normal; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 10.5px; color: var(--muted); }
+  .chip:hover { color: var(--ink); border-color: var(--accent); }
+  .chip[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .chip[aria-pressed="true"] i { color: #fff; }
+  .chip.zero { opacity: .5; }
+  .tools { display: flex; gap: 8px; align-items: center; }
+  #q { width: 200px; }
+
+  /* ---------- table ---------- */
+  .apps-scroll { overflow: auto; max-height: 64vh; border-radius: 12px; }
+  table.apps { border-collapse: separate; border-spacing: 0; width: 100%; font-size: 13px; min-width: 820px; }
+  table.apps th {
+    position: sticky; top: 0; z-index: 1; background: var(--surface-2);
+    text-align: left; font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 500; font-size: 10px; letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--muted); padding: 10px 12px; border-bottom: 1px solid var(--border); white-space: nowrap;
+  }
+  table.apps td { padding: 8px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  table.apps tr:last-child td { border-bottom: 0; }
+  table.apps td.date { font-family: "IBM Plex Mono", ui-monospace, monospace; color: var(--muted); white-space: nowrap; font-size: 12px; }
+  table.apps td.co { font-weight: 600; }
+  table.apps td.co a { color: var(--ink); text-decoration: none; }
+  table.apps td.co a:hover { color: var(--accent-ink); text-decoration: underline; }
+  table.apps td.co a::after { content: " ↗"; font-weight: 400; font-size: 11px; color: var(--muted); }
+  table.apps td.stale { box-shadow: inset 3px 0 0 var(--red); }
+  table.apps select.st {
+    font-size: 12px; padding: 3px 8px; border-radius: 999px;
+    border: 1px solid var(--border); background: var(--surface-2); color: var(--ink);
+  }
+  table.apps select.st[data-s="Offer"] { color: var(--go); border-color: color-mix(in srgb, var(--go) 45%, transparent); }
+  table.apps select.st[data-s="Rejected"], table.apps select.st[data-s="Ghosted"] { color: var(--muted); }
+  table.apps select.st[data-s="OA"], table.apps select.st[data-s="Phone"], table.apps select.st[data-s="Onsite"] { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 45%, transparent); }
+  table.apps select.st[data-s="Applied"] { color: var(--accent-ink); border-color: color-mix(in srgb, var(--accent) 40%, transparent); }
+  table.apps input.nx {
+    width: 200px; font-size: 12px; padding: 5px 7px;
+    border: 1px solid transparent; border-radius: 6px; background: transparent; color: var(--ink);
+  }
+  table.apps input.nx:hover { border-color: var(--border); }
+  table.apps input.nx:focus-visible { background: var(--bg); outline-offset: 0; }
+  table.apps button.del {
+    background: none; border: 0; color: var(--muted); cursor: pointer;
+    font-size: 14px; line-height: 1; padding: 4px 7px; border-radius: 6px;
+  }
+  table.apps button.del:hover { color: var(--red); background: var(--surface-2); }
+
+  .count { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11px; color: var(--muted); letter-spacing: .04em; }
+  .empty { font-size: 14px; color: var(--muted); padding: 22px 16px; }
+
+  /* ---------- import ---------- */
+  .import { padding: 16px 18px; display: flex; flex-direction: column; gap: 10px; }
+  .import p { margin: 0; font-size: 13px; color: var(--muted); max-width: 70ch; }
+  .import textarea { width: 100%; min-height: 110px; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 11.5px; resize: vertical; }
+  .import .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .msg { font-size: 12.5px; color: var(--accent-ink); }
+  .msg.err { color: var(--red); }
+
+  @media (max-width: 760px) {
+    .tiles { grid-template-columns: repeat(2, 1fr); }
+    #q { width: 100%; }
+    .tools { width: 100%; flex-wrap: wrap; }
+  }
+  @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <div class="top">
+      <div>
+        <p class="eyebrow">Job search</p>
+        <h1>Application log</h1>
+        <p class="sync" id="sync">&nbsp;</p>
+      </div>
+    </div>
+  </header>
+
+  <div class="tiles">
+    <div class="tile"><b id="t-total">0</b><span>Logged</span></div>
+    <div class="tile"><b id="t-applied">0</b><span>Applied</span></div>
+    <div class="tile"><b id="t-active">0</b><span>In progress</span></div>
+    <div class="tile good"><b id="t-offer">0</b><span>Offers</span></div>
+    <div class="tile warn"><b id="t-follow">0</b><span>Needs follow-up</span></div>
+  </div>
+
+  <div class="card form-card">
+    <form class="tracker-form" id="app-form">
+      <div class="field">
+        <label for="f-company">Company</label>
+        <input type="text" id="f-company" autocomplete="off" required />
+      </div>
+      <div class="field">
+        <label for="f-role">Role</label>
+        <input type="text" id="f-role" autocomplete="off" placeholder="SWE New Grad" />
+      </div>
+      <div class="field">
+        <label for="f-url">Job link (optional)</label>
+        <input type="text" id="f-url" autocomplete="off" placeholder="https://" />
+      </div>
+      <div class="field">
+        <label for="f-resume">R&eacute;sum&eacute;</label>
+        <select id="f-resume">
+          <option>SWE</option><option>AI</option>
+          <option>TikTok</option><option>Cadence</option><option>Western Digital</option>
+          <option>Copart</option><option>Assurant</option><option>BECU</option>
+          <option>Eulerity</option><option>Dordt</option><option>Other</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="f-status">Status</label>
+        <select id="f-status">
+          <option>Applied</option><option>To apply</option><option>OA</option>
+          <option>Phone</option><option>Onsite</option><option>Offer</option>
+          <option>Rejected</option><option>Ghosted</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Add application</button>
+    </form>
+  </div>
+
+  <div class="toolbar">
+    <div class="chips" id="chips"></div>
+    <div class="tools">
+      <input type="search" id="q" placeholder="Search company or role" aria-label="Search applications" />
+      <button type="button" class="btn ghost" id="backup">Copy backup</button>
+      <button type="button" class="btn ghost" id="toggle-import">Import</button>
+    </div>
+  </div>
+
+  <div class="card import" id="import-panel" hidden>
+    <p>Paste a JSON backup here &mdash; for example the entries copied from the Job-Hunt HQ page, or a backup from this log. Existing entries are kept; imported ones are added.</p>
+    <textarea id="import-text" placeholder='[{"company":"Acme","role":"SWE New Grad","status":"Applied", ...}]'></textarea>
+    <div class="row">
+      <button type="button" class="btn" id="do-import">Import entries</button>
+      <span class="msg" id="import-msg"></span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="apps-scroll">
+      <table class="apps" id="apps-table" hidden>
+        <thead>
+          <tr><th>Applied</th><th>Company</th><th>Role</th><th>R&eacute;sum&eacute;</th><th>Status</th><th>Next action</th><th></th></tr>
+        </thead>
+        <tbody id="apps-body"></tbody>
+      </table>
+      <p class="empty" id="apps-empty">Nothing logged yet. Add your first application above &mdash; anything stuck at <em>Applied</em> for 10+ days gets flagged for follow-up.</p>
+    </div>
+  </div>
+  <div class="count" id="count">&nbsp;</div>
+</main>
+
+<script>
+  (function () {
+    var STATUSES = ["To apply", "Applied", "OA", "Phone", "Onsite", "Offer", "Rejected", "Ghosted"];
+    var ACTIVE = { OA: 1, Phone: 1, Onsite: 1 };
+    var LKEY = "applog-v1";
+
+    var $ = function (id) { return document.getElementById(id); };
+    var form = $("app-form"), elCompany = $("f-company"), elRole = $("f-role"), elUrl = $("f-url"),
+        elResume = $("f-resume"), elStatus = $("f-status"),
+        table = $("apps-table"), body = $("apps-body"), empty = $("apps-empty"),
+        syncEl = $("sync"), chipsEl = $("chips"), qEl = $("q"), countEl = $("count");
+
+    var all = [];
+    var filterStatus = "All";
+    var query = "";
+
+    function isoDay() {
+      var d = new Date();
+      return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+    function daysSince(iso) {
+      if (!iso) return 0;
+      var t = Date.parse(iso + "T00:00:00");
+      return isNaN(t) ? 0 : Math.floor((Date.now() - t) / 86400000);
+    }
+    function needsFollowUp(r) { return (r.status || "Applied") === "Applied" && daysSince(r.dateApplied) >= 10; }
+    function safeUrl(u) { return /^https?:\/\//i.test(u || "") ? u : ""; }
+
+    /* ---------- stores ---------- */
+    function localStore() {
+      var listeners = [];
+      function read() { try { return JSON.parse(localStorage.getItem(LKEY) || "[]"); } catch (e) { return []; } }
+      function write(arr) { try { localStorage.setItem(LKEY, JSON.stringify(arr)); } catch (e) {} emit(); }
+      function emit() {
+        var a = read().slice().sort(function (x, y) { return (y.createdAt || 0) - (x.createdAt || 0); });
+        listeners.forEach(function (fn) { fn(a); });
+      }
+      return {
+        mode: "local",
+        subscribe: function (fn) { listeners.push(fn); emit(); },
+        add: function (rec) {
+          var a = read();
+          a.push(Object.assign({ id: "l" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6) }, rec));
+          write(a);
+        },
+        patch: function (id, f) { write(read().map(function (r) { return r.id === id ? Object.assign({}, r, f) : r; })); },
+        remove: function (id) { write(read().filter(function (r) { return r.id !== id; })); },
+        _read: read,
+        _clear: function () { try { localStorage.removeItem(LKEY); } catch (e) {} }
+      };
+    }
+
+    var store = localStore();
+    var bound = false;
+
+    function setSync(text, local) { syncEl.textContent = text; syncEl.className = "sync" + (local ? " local" : ""); }
+
+    /* ---------- render ---------- */
+    function chipDefs() {
+      var counts = {};
+      STATUSES.forEach(function (s) { counts[s] = 0; });
+      var follow = 0;
+      all.forEach(function (r) {
+        var s = r.status || "Applied";
+        counts[s] = (counts[s] || 0) + 1;
+        if (needsFollowUp(r)) follow++;
+      });
+      var defs = [{ key: "All", label: "All", n: all.length }];
+      defs.push({ key: "Follow-up", label: "Follow-up", n: follow });
+      STATUSES.forEach(function (s) { defs.push({ key: s, label: s, n: counts[s] || 0 }); });
+      return defs;
+    }
+
+    function renderChips() {
+      chipsEl.innerHTML = "";
+      chipDefs().forEach(function (d) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "chip" + (d.n === 0 && d.key !== "All" ? " zero" : "");
+        b.setAttribute("aria-pressed", String(filterStatus === d.key));
+        b.innerHTML = "";
+        b.appendChild(document.createTextNode(d.label + " "));
+        var i = document.createElement("i"); i.textContent = d.n; b.appendChild(i);
+        b.addEventListener("click", function () { filterStatus = d.key; render(); });
+        chipsEl.appendChild(b);
+      });
+    }
+
+    function visible() {
+      var q = query.trim().toLowerCase();
+      return all.filter(function (r) {
+        var st = r.status || "Applied";
+        if (filterStatus === "Follow-up") { if (!needsFollowUp(r)) return false; }
+        else if (filterStatus !== "All" && st !== filterStatus) return false;
+        if (q) {
+          var hay = ((r.company || "") + " " + (r.role || "") + " " + (r.next || "")).toLowerCase();
+          if (hay.indexOf(q) === -1) return false;
+        }
+        return true;
+      });
+    }
+
+    function td(text, cls) { var c = document.createElement("td"); if (cls) c.className = cls; if (text != null) c.textContent = text; return c; }
+
+    function renderRows(list) {
+      body.innerHTML = "";
+      list.forEach(function (r) {
+        var st = r.status || "Applied";
+        var tr = document.createElement("tr");
+
+        tr.appendChild(td(r.dateApplied || "—", "date" + (needsFollowUp(r) ? " stale" : "")));
+
+        var tc = td(null, "co");
+        var link = safeUrl(r.url);
+        if (link) {
+          var a = document.createElement("a");
+          a.href = link; a.target = "_blank"; a.rel = "noopener"; a.textContent = r.company || "";
+          tc.appendChild(a);
+        } else { tc.textContent = r.company || ""; }
+        tr.appendChild(tc);
+
+        tr.appendChild(td(r.role || ""));
+        tr.appendChild(td(r.resume || ""));
+
+        var t5 = td(null);
+        var sel = document.createElement("select");
+        sel.className = "st"; sel.setAttribute("data-s", st); sel.setAttribute("aria-label", "Status for " + (r.company || "application"));
+        STATUSES.forEach(function (s) {
+          var o = document.createElement("option"); o.value = s; o.textContent = s; if (s === st) o.selected = true; sel.appendChild(o);
+        });
+        sel.addEventListener("change", function () {
+          sel.setAttribute("data-s", sel.value);
+          Promise.resolve(store.patch(r.id, { status: sel.value })).catch(function () {});
+        });
+        t5.appendChild(sel); tr.appendChild(t5);
+
+        var t6 = td(null);
+        var nx = document.createElement("input");
+        nx.type = "text"; nx.className = "nx"; nx.value = r.next || ""; nx.placeholder = "—";
+        nx.setAttribute("aria-label", "Next action for " + (r.company || "application"));
+        nx.addEventListener("change", function () { Promise.resolve(store.patch(r.id, { next: nx.value })).catch(function () {}); });
+        t6.appendChild(nx); tr.appendChild(t6);
+
+        var t7 = td(null);
+        var del = document.createElement("button");
+        del.className = "del"; del.type = "button"; del.title = "Delete"; del.textContent = "✕";
+        del.addEventListener("click", function () {
+          if (window.confirm("Remove " + (r.company || "this application") + " from the log?")) {
+            Promise.resolve(store.remove(r.id)).catch(function () {});
+          }
+        });
+        t7.appendChild(del); tr.appendChild(t7);
+
+        body.appendChild(tr);
+      });
+    }
+
+    function render(list) {
+      if (list) all = list;
+      var applied = 0, active = 0, offers = 0, follow = 0;
+      all.forEach(function (r) {
+        var st = r.status || "Applied";
+        if (st !== "To apply") applied++;
+        if (ACTIVE[st]) active++;
+        if (st === "Offer") offers++;
+        if (needsFollowUp(r)) follow++;
+      });
+      $("t-total").textContent = all.length;
+      $("t-applied").textContent = applied;
+      $("t-active").textContent = active;
+      $("t-offer").textContent = offers;
+      $("t-follow").textContent = follow;
+
+      renderChips();
+      var v = visible();
+      renderRows(v);
+      var has = v.length > 0;
+      table.hidden = !has;
+      empty.hidden = has;
+      if (!has && all.length) empty.textContent = "No applications match this filter.";
+      else if (!has) empty.textContent = "Nothing logged yet. Add your first application above — anything stuck at Applied for 10+ days gets flagged for follow-up.";
+      countEl.textContent = all.length ? "Showing " + v.length + " of " + all.length : " ";
+    }
+
+    function bind() {
+      if (bound) return;
+      bound = true;
+      store.subscribe(function (l) { render(l); });
+      setSync("● saved in this browser — use Copy backup / Import to move between devices", false);
+    }
+
+    /* ---------- add ---------- */
+    form.addEventListener("submit", function (e) {
+      e.preventDefault();
+      var company = elCompany.value.trim();
+      if (!company) { elCompany.focus(); return; }
+      var rec = {
+        company: company, role: elRole.value.trim(), url: safeUrl(elUrl.value.trim()),
+        resume: elResume.value, status: elStatus.value, next: "",
+        dateApplied: isoDay(), createdAt: Date.now()
+      };
+      Promise.resolve(store.add(rec)).catch(function () {});
+      form.reset(); elStatus.value = "Applied"; elCompany.focus();
+    });
+
+    qEl.addEventListener("input", function () { query = qEl.value; render(); });
+
+    /* ---------- backup / import ---------- */
+    function clip(text, done) {
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) { navigator.clipboard.writeText(text).then(done, function () {}); return; }
+        var ta = document.createElement("textarea"); ta.value = text; document.body.appendChild(ta); ta.select();
+        document.execCommand("copy"); document.body.removeChild(ta); done();
+      } catch (e) {}
+    }
+    $("backup").addEventListener("click", function () {
+      var b = $("backup"), o = b.textContent;
+      var data = all.map(function (r) { var c = Object.assign({}, r); delete c.id; return c; });
+      clip(JSON.stringify(data, null, 1), function () { b.textContent = "Copied"; setTimeout(function () { b.textContent = o; }, 1400); });
+    });
+
+    $("toggle-import").addEventListener("click", function () { var p = $("import-panel"); p.hidden = !p.hidden; if (!p.hidden) $("import-text").focus(); });
+
+    $("do-import").addEventListener("click", function () {
+      var msg = $("import-msg"); msg.className = "msg"; msg.textContent = "";
+      var raw = $("import-text").value.trim();
+      if (!raw) { msg.className = "msg err"; msg.textContent = "Paste a JSON backup first."; return; }
+      var arr;
+      try { arr = JSON.parse(raw); } catch (e) { msg.className = "msg err"; msg.textContent = "That isn't valid JSON — paste exactly what was copied."; return; }
+      if (!Array.isArray(arr)) { msg.className = "msg err"; msg.textContent = "Expected a list of applications (starts with [ )."; return; }
+      var n = 0, base = Date.now();
+      arr.forEach(function (r, i) {
+        if (!r || typeof r !== "object" || !String(r.company || "").trim()) return;
+        var st = STATUSES.indexOf(r.status) >= 0 ? r.status : "Applied";
+        Promise.resolve(store.add({
+          company: String(r.company).trim(), role: String(r.role || ""), url: safeUrl(r.url),
+          resume: String(r.resume || "Other"), status: st, next: String(r.next || ""),
+          dateApplied: /^\d{4}-\d{2}-\d{2}$/.test(r.dateApplied || "") ? r.dateApplied : isoDay(),
+          createdAt: typeof r.createdAt === "number" ? r.createdAt : base + i
+        })).catch(function () {});
+        n++;
+      });
+      msg.textContent = n ? "Imported " + n + " application" + (n === 1 ? "" : "s") + "." : "No valid entries found (each needs a company).";
+      if (n) $("import-text").value = "";
+    });
+
+    bind();
+  })();
+</script>
+</body>
+</html>
